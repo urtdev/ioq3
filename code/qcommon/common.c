@@ -1051,7 +1051,7 @@ void *Z_TagMalloc( int size, int tag ) {
 	base->tag = tag;			// no longer a free block
 	
 	zone->rover = base->next;	// next allocation will start looking here
-	zone->used += base->size;	//
+	zone->used += base->size;
 	
 	base->id = ZONEID;
 
@@ -2639,7 +2639,7 @@ void Com_Init( char *commandLine ) {
 
   // get dedicated here for proper hunk megs initialization
 #ifdef DEDICATED
-	com_dedicated = Cvar_Get ("dedicated", "1", CVAR_INIT);
+	com_dedicated = Cvar_Get ("dedicated", "2", CVAR_INIT);
 	Cvar_CheckRange( com_dedicated, 1, 2, qtrue );
 #else
 	com_dedicated = Cvar_Get ("dedicated", "0", CVAR_LATCH);
@@ -2656,7 +2656,7 @@ void Com_Init( char *commandLine ) {
 	// init commands and vars
 	//
 	com_altivec = Cvar_Get ("com_altivec", "1", CVAR_ARCHIVE);
-	com_maxfps = Cvar_Get ("com_maxfps", "85", CVAR_ARCHIVE);
+	com_maxfps = Cvar_Get ("com_maxfps", "125", CVAR_ARCHIVE);
 	com_blood = Cvar_Get ("com_blood", "1", CVAR_ARCHIVE);
 
 	com_logfile = Cvar_Get ("logfile", "0", CVAR_TEMP );
