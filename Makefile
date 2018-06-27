@@ -245,10 +245,10 @@ SYSDIR=$(MOUNT_DIR)/sys
 BLIBDIR=$(MOUNT_DIR)/botlib
 NDIR=$(MOUNT_DIR)/null
 JPDIR=$(EXTERNAL_DIR)/jpeg-8c
-OGGDIR=$(EXTERNAL_DIR)/libogg-1.3.2
-VORBISDIR=$(EXTERNAL_DIR)/libvorbis-1.3.5
-OPUSDIR=$(EXTERNAL_DIR)/opus-1.1.4
-OPUSFILEDIR=$(EXTERNAL_DIR)/opusfile-0.8
+OGGDIR=$(EXTERNAL_DIR)/libogg-1.3.3
+VORBISDIR=$(EXTERNAL_DIR)/libvorbis-1.3.6
+OPUSDIR=$(EXTERNAL_DIR)/opus-1.2.1
+OPUSFILEDIR=$(EXTERNAL_DIR)/opusfile-0.9
 ZDIR=$(EXTERNAL_DIR)/zlib
 SDLHDIR=$(EXTERNAL_DIR)/SDL2
 LIBSDIR=$(LIBS_DIR)
@@ -1705,6 +1705,7 @@ Q3OBJ += \
   $(B)/client/opus/lin2log.o \
   $(B)/client/opus/log2lin.o \
   $(B)/client/opus/LPC_analysis_filter.o \
+  $(B)/client/opus/LPC_fit.o \
   $(B)/client/opus/LPC_inv_pred_gain.o \
   $(B)/client/opus/table_LSF_cos.o \
   $(B)/client/opus/NLSF2A.o \
@@ -1738,11 +1739,9 @@ Q3OBJ += \
   $(B)/client/opus/LTP_analysis_filter_FLP.o \
   $(B)/client/opus/LTP_scale_ctrl_FLP.o \
   $(B)/client/opus/noise_shape_analysis_FLP.o \
-  $(B)/client/opus/prefilter_FLP.o \
   $(B)/client/opus/process_gains_FLP.o \
   $(B)/client/opus/regularize_correlations_FLP.o \
   $(B)/client/opus/residual_energy_FLP.o \
-  $(B)/client/opus/solve_LS_FLP.o \
   $(B)/client/opus/warped_autocorrelation_FLP.o \
   $(B)/client/opus/wrappers_FLP.o \
   $(B)/client/opus/autocorrelation_FLP.o \
@@ -1751,7 +1750,6 @@ Q3OBJ += \
   $(B)/client/opus/energy_FLP.o \
   $(B)/client/opus/inner_product_FLP.o \
   $(B)/client/opus/k2a_FLP.o \
-  $(B)/client/opus/levinsondurbin_FLP.o \
   $(B)/client/opus/LPC_inv_pred_gain_FLP.o \
   $(B)/client/opus/pitch_analysis_core_FLP.o \
   $(B)/client/opus/scale_copy_vector_FLP.o \
