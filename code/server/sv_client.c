@@ -472,6 +472,7 @@ gotnewcl:
 	newcl->lastSnapshotTime = 0;
 	newcl->lastPacketTime = svs.time;
 	newcl->lastConnectTime = svs.time;
+	newcl->numcmds = 0;
 	
 	// when we receive the first packet from the client, we will
 	// notice that it is from a different serverid and that the
@@ -1033,44 +1034,6 @@ static void SV_ResetPureClient_f( client_t *cl ) {
 }
 
 /*
-==================
-SV_CheckFunstuffExploit
-==================
-Makes sure each comma-separated token of the specified userinfo key
-is at most 13 characters to protect the game against buffer overflow.
-*/
-
-static qboolean SV_CheckFunstuffExploit( char *userinfo, char *key )
-{
-	char *token = Info_ValueForKey( userinfo, key );
-
-	if ( !token )
-		return qfalse;
-
-	while (token && *token)
-	{
-		int len;
-		char *next = strchr(token, ',');
-
-		if (next == NULL) {
-			len = strlen(token);
-			token = NULL;
-		} else {
-			len = next - token;
-			token = next + 1;
-		}
-
-		if (len > 13) {
-			Info_SetValueForKey( userinfo, key, "" );
-			return qtrue;
-		}
-	}
-
-	return qfalse;
-}
-
-
-/*
 =================
 SV_UserinfoChanged
 
@@ -1169,24 +1132,6 @@ void SV_UserinfoChanged( client_t *cl ) {
 		SV_DropClient( cl, "userinfo string length exceeded" );
 	else
 		Info_SetValueForKey( cl->userinfo, "ip", ip );
-
-
-	val = Info_ValueForKey( cl->userinfo, "cl_guid" );
-
-	for ( i = 0; i < strlen( val ); i++ ) {
-		if ( !isalnum( val[i] ) ) {
-			Info_SetValueForKey( cl->userinfo, "cl_guid", "" );
-			Com_Printf( "Cleared malformed cl_guid from %s.\n", NET_AdrToString( cl->netchan.remoteAddress ) );
-			break;
-		}
-	}
-
-	if ( SV_CheckFunstuffExploit( cl->userinfo, "funfree" ) ||
-		 SV_CheckFunstuffExploit( cl->userinfo, "funred" ) ||
-		 SV_CheckFunstuffExploit( cl->userinfo, "funblue" ) )
-	{
-		Com_Printf( "funstuff exploit attempt from %s\n", NET_AdrToString( cl->netchan.remoteAddress ) );
-	}
 }
 
 
@@ -1195,7 +1140,16 @@ void SV_UserinfoChanged( client_t *cl ) {
 SV_UpdateUserinfo_f
 ==================
 */
-static void SV_UpdateUserinfo_f( client_t *cl ) {
+void SV_UpdateUserinfo_f( client_t *cl ) {
+	if ( (sv_floodProtect->integer) && (cl->state >= CS_ACTIVE) && (svs.time < cl->nextReliableUserTime) ) {
+		Q_strncpyz( cl->userinfobuffer, Cmd_Argv(1), sizeof(cl->userinfobuffer) );
+		SV_SendServerCommand(cl, "print \"^7Command ^1delayed^7 due to sv_floodprotect.\"");
+		return;
+	}
+
+	cl->userinfobuffer[0] = 0;
+	cl->nextReliableUserTime = svs.time + 5000;
+
 	Q_strncpyz( cl->userinfo, Cmd_Argv(1), sizeof(cl->userinfo) );
 
 	SV_UserinfoChanged( cl );
@@ -1342,14 +1296,6 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK ) {
 				return;
 			}
 
-			if ( !Q_stricmp( "stats", Cmd_Argv(0) ) ) {
-				if ( cl - svs.clients != SV_GameClientNum( cl - svs.clients )->clientNum ) {
-					Com_Printf( "Stats command exploit attempt from %s\n", NET_AdrToString( cl->netchan.remoteAddress ) );
-					SV_SendServerCommand( cl, "print \"^7Stats command exploit attempt detected. This has been ^1reported^7.\n\"" );
-					return;
-				}
-			}
-
 			VM_Call( gvm, GAME_CLIENT_COMMAND, cl - svs.clients );
 		}
 	}
@@ -1392,13 +1338,16 @@ static qboolean SV_ClientCommand( client_t *cl, msg_t *msg ) {
 	// but not other people
 	// We don't do this when the client hasn't been active yet since it's
 	// normal to spam a lot of commands when downloading
-	if ( !com_cl_running->integer && 
-		cl->state >= CS_ACTIVE &&
-		sv_floodProtect->integer && 
-		svs.time < cl->nextReliableTime ) {
-		// ignore any other text messages from this client but let them keep playing
-		// TTimo - moved the ignored verbose to the actual processing in SV_ExecuteClientCommand, only printing if the core doesn't intercept
-		clientOk = qfalse;
+	if ( !com_cl_running->integer && cl->state >= CS_ACTIVE && sv_floodProtect->integer ) {
+		if (svs.time < cl->nextReliableTime ) {
+			if (++(cl->numcmds) > sv_floodProtect->integer ) {
+				// ignore any other text messages from this client but let them keep playing
+				// TTimo - moved the ignored verbose to the actual processing in SV_ExecuteClientCommand, only printing if the core doesn't intercept
+				clientOk = qfalse;
+			}
+		} else {
+			cl->numcmds = 1;
+		}
 	} 
 
 	// don't allow another command for one second
@@ -1409,7 +1358,7 @@ static qboolean SV_ClientCommand( client_t *cl, msg_t *msg ) {
 	cl->lastClientCommand = seq;
 	Com_sprintf(cl->lastClientCommandString, sizeof(cl->lastClientCommandString), "%s", s);
 
-	return qtrue;		// continue procesing
+	return qtrue;		// continue processing
 }
 
 

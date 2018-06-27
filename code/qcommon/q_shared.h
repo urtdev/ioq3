@@ -28,8 +28,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define PRODUCT_NAME				"ioq3-UrT"
 #define BASEGAME					"q3ut4"
-#define CLIENT_WINDOW_TITLE		"UrbanTerror"
-#define CLIENT_WINDOW_MIN_TITLE	"UrbanTerror"
+#define CLIENT_WINDOW_TITLE		"Urban Terror"
+#define CLIENT_WINDOW_MIN_TITLE	"Urban Terror"
 #define HOMEPATH_NAME_UNIX		".q3a"
 #define HOMEPATH_NAME_WIN			"Quake3"
 #define HOMEPATH_NAME_MACOSX		HOMEPATH_NAME_WIN
@@ -1083,7 +1083,7 @@ typedef enum {
 // per-level limits
 //
 #define	MAX_CLIENTS			64		// absolute limit
-#define MAX_LOCATIONS		64
+#define MAX_LOCATIONS		360   // UrT - previously 64
 
 #define	GENTITYNUM_BITS		10		// don't need to send any more
 #define	MAX_GENTITIES		(1<<GENTITYNUM_BITS)

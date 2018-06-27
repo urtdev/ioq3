@@ -871,7 +871,7 @@ void SV_Init (void)
 	SV_AddOperatorCommands ();
 
 	// serverinfo vars
-	Cvar_Get ("dmflags", "0", CVAR_SERVERINFO);
+	Cvar_Get ("dmflags", "0", CVAR_ARCHIVE);
 	Cvar_Get ("fraglimit", "20", CVAR_SERVERINFO);
 	Cvar_Get ("timelimit", "0", CVAR_SERVERINFO);
 	sv_gametype = Cvar_Get ("g_gametype", "0", CVAR_SERVERINFO | CVAR_LATCH );
@@ -886,7 +886,7 @@ void SV_Init (void)
 	sv_minPing = Cvar_Get ("sv_minPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
 	sv_maxPing = Cvar_Get ("sv_maxPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
 	sv_floodProtect = Cvar_Get ("sv_floodProtect", "2", CVAR_ARCHIVE | CVAR_SERVERINFO );
-	sv_clientsPerIp = Cvar_Get ("sv_clientsPerIp", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
+	sv_clientsPerIp = Cvar_Get ("sv_clientsPerIp", "3", CVAR_ARCHIVE | CVAR_SERVERINFO );
 	sv_newpurelist = Cvar_Get ("sv_newpurelist", "0", CVAR_ARCHIVE );
 
 	// systeminfo
