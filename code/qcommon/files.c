@@ -3435,6 +3435,9 @@ static void FS_Startup( const char *gameName )
 		homePath = Sys_DefaultHomePath();
 	} else if (fs_defaultHomePath->integer == 2) {
 		homePath = Sys_BinaryPath();
+		if (!homePath || !homePath[0]) {
+			homePath = ".";
+		}
 	} else if (fs_defaultHomePath->integer == 3) {
 		homePath = Sys_DefaultInstallPath();
 	} else {
