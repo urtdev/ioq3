@@ -1454,7 +1454,7 @@ Q3OBJ = \
 
 ifdef MINGW
   Q3OBJ += \
-    $(B)/client/con_passive.o
+    $(B)/client/con_win32.o
 else
   Q3OBJ += \
     $(B)/client/con_tty.o
